@@ -42,6 +42,9 @@ func loadExecutor(name string) executor.Executor {
 	baseExecutor.RegisterExecutor(".js", func(filePah string) executor.Executor {
 		return js.NewExecutor(filePah)
 	})
+	baseExecutor.RegisterExecutor(".mjs", func(filePah string) executor.Executor {
+		return js.NewExecutor(filePah)
+	})
 	baseExecutor.RegisterExecutor(".sh", func(filePah string) executor.Executor {
 		return bash.NewExecutor(filePah)
 	})

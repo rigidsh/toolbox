@@ -1,10 +1,7 @@
 package js
 
 import (
-	"bufio"
-	"bytes"
-	"os"
-	"os/exec"
+	"github.com/rigidsh/toolbox/executor/js/node"
 )
 
 func NewExecutor(filePath string) *Executor {
@@ -19,16 +16,13 @@ type Executor struct {
 
 func (executor *Executor) Execute(args []string) error {
 
-	cmdExec := exec.Command("node", "-e", prepareNodeCommand(executor.filePath, "exec", args))
-	cmdExec.Stderr = os.Stderr
-	cmdExec.Stdin = os.Stdin
-	cmdExec.Stdout = os.Stdout
-
-	err := cmdExec.Start()
-	if err != nil {
-		return err
+	var result interface{}
+	rawArgs := make([]interface{}, 0, len(args))
+	for _, arg := range args {
+		rawArgs = append(rawArgs, arg)
 	}
-	err = cmdExec.Wait()
+
+	err := node.CallFunction(executor.filePath, "exec", rawArgs, &result)
 	if err != nil {
 		return err
 	}
@@ -38,27 +32,23 @@ func (executor *Executor) Execute(args []string) error {
 
 func (executor *Executor) Autocomplete(completedArgs []string, toComplete string) ([]string, error) {
 
-	rawCompletedArgs := make([]string, len(completedArgs)+1)
-	rawCompletedArgs[0] = toComplete
+	var rawResult interface{}
+
+	rawCompletedArgs := make([]interface{}, len(completedArgs)+1)
+	rawCompletedArgs[len(completedArgs)] = toComplete
 	for i, v := range completedArgs {
 		rawCompletedArgs[i] = v
 	}
 
-	cmdExec := exec.Command("node", "-e", prepareNodeCommand(executor.filePath, "autocomplete", rawCompletedArgs))
-
-	cmdExec.Stderr = os.Stderr
-	cmdExec.Stdin = os.Stdin
-	var outBuffer bytes.Buffer
-	cmdExec.Stdout = bufio.NewWriter(&outBuffer)
-
-	err := cmdExec.Start()
-	if err != nil {
-		return nil, err
-	}
-	err = cmdExec.Wait()
+	err := node.CallFunction(executor.filePath, "autocomplete", rawCompletedArgs, &rawResult)
 	if err != nil {
 		return nil, err
 	}
 
-	return parseNodeArrayResult(outBuffer.String())
+	result := make([]string, 0, len(rawResult.([]interface{})))
+	for _, r := range rawResult.([]interface{}) {
+		result = append(result, r.(string))
+	}
+
+	return result, nil
 }
