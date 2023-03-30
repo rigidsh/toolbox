@@ -6,6 +6,7 @@ It will copy all scripts to /var/toolbox folder, create symlink for command and 
 ## Supported scripts
 - .js via nodejs 
 - .mjs via nodejs
+- .py via python
 - .sh via bash
 
 all scripts except .sh support autocomplete function
@@ -13,7 +14,7 @@ all scripts except .sh support autocomplete function
 
 ## ToDo
 
-- [ ] python scripts support
+- [x] ~~python scripts support~~
 - [ ] autocompletion for MacOS
 - [ ] autocompletion for Windows
 - [ ] create script package format

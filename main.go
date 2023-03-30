@@ -6,6 +6,7 @@ import (
 	"github.com/rigidsh/toolbox/executor/bash"
 	"github.com/rigidsh/toolbox/executor/folder"
 	"github.com/rigidsh/toolbox/executor/js"
+	"github.com/rigidsh/toolbox/executor/python"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,6 +33,9 @@ func loadExecutor(name string) executor.Executor {
 	})
 	baseExecutor.RegisterExecutor(".sh", func(filePah string) executor.Executor {
 		return bash.NewExecutor(filePah)
+	})
+	baseExecutor.RegisterExecutor(".py", func(filePah string) executor.Executor {
+		return python.NewExecutor(filePah)
 	})
 
 	return baseExecutor
